@@ -1,4 +1,4 @@
-package kubepug
+package utils
 
 import (
 	"fmt"

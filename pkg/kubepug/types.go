@@ -1,50 +1,27 @@
 package kubepug
 
-// KubeAPI represents a Kubernetes API defined in swagger.json
-type KubeAPI struct {
-	description string
-	group       string
-	kind        string
-	version     string
-	name        string
-	deprecated  bool
+import (
+	"github.com/rikatz/kubepug/pkg/parser"
+	"github.com/rikatz/kubepug/pkg/schema"
+	"k8s.io/cli-runtime/pkg/genericclioptions"
+)
+
+// Deprecator implements an interface for reading some sort of Input and comparing against the
+// map of Kubernetes APIs to check if there's some Deprecated or Deleted
+type Deprecator interface {
+	ListDeprecated() []schema.DeprecatedAPI
+	ListDeleted() []schema.DeletedAPI
 }
 
-// KubernetesAPIs is a map of KubeAPI objects
-type KubernetesAPIs map[string]KubeAPI
-
-// DeprecatedAPI definition of an API
-type DeprecatedAPI struct {
-	Description string `json,yaml:"description,omitempty"`
-	Group       string `json,yaml:"group,omitempty"`
-	Kind        string `json,yaml:"kind,omitempty"`
-	Version     string `json,yaml:"version,omitempty"`
-	Name        string `json,yaml:"name,omitempty"`
-	// TODO: What is this boolean for? All APIs here aren't already marked as Deprecated?
-	Deprecated bool             `json,yaml:"deprecated,omitempty"`
-	Items      []DeprecatedItem `json,yaml:"deprecated_items,omitempty"`
+// YamlInput defines a struct that will be used when comparing APIs against a YAML Input file
+type YamlInput struct {
+	File   string
+	K8sapi *parser.KubernetesAPIs
 }
 
-// DeprecatedItem definition of the Items inside a deprecated API
-type DeprecatedItem struct {
-	Scope      string `json,yaml:"scope,omitempty"`
-	ObjectName string `json,yaml:"objectname,omitempty"`
-	Namespace  string `json,yaml:"namespace,omitempty"`
-}
-
-// DeletedAPI definition of an API
-type DeletedAPI struct {
-	Group   string `json,yaml:"group,omitempty"`
-	Kind    string `json,yaml:"kind,omitempty"`
-	Version string `json,yaml:"version,omitempty"`
-	Name    string `json,yaml:"name,omitempty"`
-	// TODO: What is this boolean for? All APIs here aren't already marked as Deleted?
-	Deleted bool             `json,yaml:"deleted,omitempty"`
-	Items   []DeprecatedItem `json,yaml:"deleted_items,omitempty"`
-}
-
-// Result to show final user
-type Result struct {
-	DeprecatedAPIs []DeprecatedAPI `json,yaml:"deprecated_apis,omitempty"`
-	DeletedAPIs    []DeletedAPI    `json,yaml:"deleted_apis,omitempty"`
+// K8sInput defines a struct that will be used when comparing APIs against a K8s Cluster
+type K8sInput struct {
+	K8sconfig *genericclioptions.ConfigFlags
+	K8sapi    parser.KubernetesAPIs
+	Apiwalk   bool
 }
