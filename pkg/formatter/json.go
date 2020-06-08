@@ -3,7 +3,7 @@ package formatter
 import (
 	jsonencoding "encoding/json"
 
-	"github.com/rikatz/kubepug/pkg/schema"
+	"github.com/rikatz/kubepug/pkg/results"
 )
 
 type json struct{}
@@ -12,7 +12,7 @@ func newJSONFormatter() Formatter {
 	return &json{}
 }
 
-func (f *json) Output(results schema.Result) ([]byte, error) {
+func (f *json) Output(results results.Result) ([]byte, error) {
 	j, err := jsonencoding.Marshal(results)
 	if err != nil {
 		return nil, err

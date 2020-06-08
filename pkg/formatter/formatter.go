@@ -1,12 +1,12 @@
 package formatter
 
 import (
-	"github.com/rikatz/kubepug/pkg/schema"
+	"github.com/rikatz/kubepug/pkg/results"
 )
 
 //Formatter defines the behavior for a Formatter
 type Formatter interface {
-	Output(results schema.Result) ([]byte, error)
+	Output(results results.Result) ([]byte, error)
 }
 
 //NewFormatter returns a new instance of formatter

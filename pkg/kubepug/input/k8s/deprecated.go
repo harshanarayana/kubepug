@@ -11,12 +11,12 @@ import (
 	"k8s.io/client-go/dynamic"
 
 	"github.com/rikatz/kubepug/pkg/parser"
-	pugschema "github.com/rikatz/kubepug/pkg/schema"
+	"github.com/rikatz/kubepug/pkg/results"
 	log "github.com/sirupsen/logrus"
 )
 
 // GetDeprecated receives the Map of Deprecated API and List the existent Deprecated Objects in the Cluster
-func GetDeprecated(KubeAPIs parser.KubernetesAPIs, config *genericclioptions.ConfigFlags) (deprecated []pugschema.DeprecatedAPI) {
+func GetDeprecated(KubeAPIs parser.KubernetesAPIs, config *genericclioptions.ConfigFlags) (deprecated []results.DeprecatedAPI) {
 
 	var resourceName string
 
@@ -65,7 +65,7 @@ func GetDeprecated(KubeAPIs parser.KubernetesAPIs, config *genericclioptions.Con
 		}
 		if len(list.Items) > 0 {
 			log.Infof("Found %d deprecated objects of type %s/%s/%s", len(list.Items), group, version, resourceName)
-			api := pugschema.DeprecatedAPI{
+			api := results.DeprecatedAPI{
 				Kind:        kind,
 				Deprecated:  dpa.Deprecated,
 				Group:       group,
@@ -74,7 +74,7 @@ func GetDeprecated(KubeAPIs parser.KubernetesAPIs, config *genericclioptions.Con
 				Description: dpa.Description,
 			}
 
-			api.Items = pugschema.ListObjects(list.Items)
+			api.Items = results.ListObjects(list.Items)
 			deprecated = append(deprecated, api)
 		}
 	}

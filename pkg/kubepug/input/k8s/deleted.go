@@ -14,7 +14,7 @@ import (
 	"k8s.io/client-go/dynamic"
 
 	"github.com/rikatz/kubepug/pkg/parser"
-	pugschema "github.com/rikatz/kubepug/pkg/schema"
+	"github.com/rikatz/kubepug/pkg/results"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -95,7 +95,7 @@ func (ignoreStruct ignoreStruct) populateAPIService(dynClient dynamic.Interface,
 }
 
 // GetDeleted walk through Kubernetes API and verifies which Resources doesn't exists anymore in swagger.json
-func GetDeleted(KubeAPIs parser.KubernetesAPIs, config *genericclioptions.ConfigFlags) (deleted []pugschema.DeletedAPI) {
+func GetDeleted(KubeAPIs parser.KubernetesAPIs, config *genericclioptions.ConfigFlags) (deleted []results.DeletedAPI) {
 
 	configRest, err := config.ToRESTConfig()
 	if err != nil {
@@ -170,15 +170,15 @@ func GetDeleted(KubeAPIs parser.KubernetesAPIs, config *genericclioptions.Config
 				}
 
 				if len(list.Items) > 0 {
-					log.Debugf("Found %d deleted items in %s/%s", len(list.Items), gvr.GroupResource().String(), resource.Kind)
-					d := pugschema.DeletedAPI{
+					log.Debugf("Found %d deleted items in %s/%s", len(list.Items), gvr.Group, resource.Kind)
+					d := results.DeletedAPI{
 						Deleted: true,
 						Name:    resource.Name,
-						Group:   gvr.GroupResource().String(),
+						Group:   gvr.Group,
 						Kind:    resource.Kind,
 						Version: gv.Version,
 					}
-					d.Items = pugschema.ListObjects(list.Items)
+					d.Items = results.ListObjects(list.Items)
 					deleted = append(deleted, d)
 				}
 			}
