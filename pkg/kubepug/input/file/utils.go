@@ -65,7 +65,7 @@ func (fileItems FileItems) yamlToMap(file os.FileInfo, location string, isDir bo
 
 	yamlFile, err := ioutil.ReadFile(location)
 	if err != nil {
-		log.Warningf("Failed to read file %s: %v. Skipping to next file", file.Name(), err)
+		log.Warningf("Failed to read file %s: %v. Skipping to next file", location, err)
 		return
 	}
 
@@ -74,7 +74,7 @@ func (fileItems FileItems) yamlToMap(file os.FileInfo, location string, isDir bo
 	for {
 		var obj FileStruct
 		if err = dec.Decode(&obj); err != nil && err != io.EOF {
-			log.Warningf("Found invalid yaml: %s: %v. Skipping to next", file.Name(), err)
+			log.Warningf("Found invalid yaml: %s: %v. Skipping to next", location, err)
 			break
 		}
 		if err == io.EOF {
@@ -92,6 +92,10 @@ func (fileItems FileItems) yamlToMap(file os.FileInfo, location string, isDir bo
 			group = ""
 			version = gv[0]
 			objIndex = fmt.Sprintf("%s/%s", version, obj.Kind)
+		}
+		if version == "" || obj.Kind == "" {
+			log.Warningf("YAML file does not contain apiVersion or Kind: %s  Skipping to next", location)
+			break
 		}
 		item := results.Item{
 			ObjectName: obj.Metadata.Name,
