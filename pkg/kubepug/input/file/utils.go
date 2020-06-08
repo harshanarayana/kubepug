@@ -15,6 +15,7 @@ import (
 	"github.com/rikatz/kubepug/pkg/results"
 )
 
+// FileStruct defines a type that will receive a common format of objects regardless of the input format (yaml, json)
 type FileStruct struct {
 	Kind       string `yaml:"kind"`
 	APIVersion string `yaml:"apiVersion"`
